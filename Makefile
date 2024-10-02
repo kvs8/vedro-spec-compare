@@ -4,10 +4,13 @@ clean:
 
 .PHONY: install
 install:
+	pip3 install --quiet --upgrade pip
 	pip3 install --quiet -r requirements.txt -r requirements-dev.txt
 
 .PHONY: install-package
 install-package:
+	pip3 install --quiet --upgrade pip
+	pip3 install --quiet --upgrade setuptools wheel twine
 	python3 setup.py install
 
 .PHONY: check
