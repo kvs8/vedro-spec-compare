@@ -1,5 +1,8 @@
 # vedro-spec-compare
 
+[![PyPI](https://img.shields.io/pypi/v/vedro-spec-compare.svg?style=flat-square)](https://pypi.org/project/vedro-spec-compare/)
+[![Python Version](https://img.shields.io/pypi/pyversions/vedro-spec-compare.svg?style=flat-square)](https://pypi.org/project/vedro-spec-compare/)
+
 # Description
 
 `vedro-spec-compare` is a tool to compare two OpenAPI specs and generate a coverage report
@@ -58,7 +61,7 @@ google-chrome coverage.html
 
 #### With report path
 ```bash
-vsc coverage golden_spec.yml testing_spec.yml --report-path coverage_report.yml
+vsc coverage golden_spec.yml testing_spec.yml --report-path coverage_report.html
 ```
 ```bash
 google-chrome coverage_report.html 
@@ -66,7 +69,7 @@ google-chrome coverage_report.html
 
 #### From urls
 ```bash
-vsc coverage https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore-expanded.yaml
+vsc coverage https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore-expanded.yaml https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml
 ```
 ```bash
 google-chrome coverage.html 
