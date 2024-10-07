@@ -8,7 +8,7 @@ def find_required():
 
 setup(
     name="vedro-spec-compare",
-    version="0.0.1",
+    version="0.0.2",
     description="OpenAPI spec compare",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
