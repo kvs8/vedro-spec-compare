@@ -47,7 +47,7 @@ class Parser:
     @staticmethod
     def parse_from_url(url: str) -> Dict[str, SpecMethod]:
         response = requests.get(url)
-        content = yaml.safe_load(response.text)
+        content = yaml.load(response.text, Loader=yaml.CLoader)
 
         result = dict()
         for data in collect_schema_data(content):
@@ -57,7 +57,7 @@ class Parser:
     @staticmethod
     def parse_from_file(file_path: str) -> Dict[str, SpecMethod]:
         with open(file_path) as f:
-            content = yaml.safe_load(f)
+            content = yaml.load(f, Loader=yaml.CLoader)
 
         result = dict()
         for data in collect_schema_data(content):
