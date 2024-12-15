@@ -4,10 +4,10 @@ from .parser import SpecMethod
 
 
 class DiffMethod:
-    def __init__(self, method_data: SpecMethod, details: Optional[List[str]] = None):
-        self.http_method = method_data.method
-        self.http_path = method_data.route
-        self.details = details or []
+    def __init__(self, method_data: SpecMethod, details: Optional[Dict[str, List[str]]] = None) -> None:
+        self.http_method: str = method_data.method
+        self.http_path: str = method_data.route
+        self.details: Dict[str, List[str]] = details or {}
 
 
 class Diff:
@@ -53,7 +53,7 @@ class Diff:
         self.full += 1
         self.methods_full.append(DiffMethod(method))
 
-    def increase_partial(self, method: SpecMethod, details: List[str]) -> None:
+    def increase_partial(self, method: SpecMethod, details: Dict[str, List[str]]) -> None:
         self.partial += 1
         self.methods_partial.append(DiffMethod(method, details))
 
@@ -89,17 +89,72 @@ class Differ:
         return False
 
     def is_partial_method(self, method_id: str) -> bool:
-        details = []
+        details = {}
 
         diff_codes = set(self.golden_spec[method_id].response_codes) - set(self.testing_spec[method_id].response_codes)
         if diff_codes:
-            details.append(f"Not covered status codes: {','.join(diff_codes)}")
+            details["Uncovered HTTP codes"] = list(diff_codes)
 
         diff_queries = set(self.golden_spec[method_id].query_params) - set(self.testing_spec[method_id].query_params)
         if diff_queries:
-            details.append(f"Not covered params: {','.join(diff_queries)}")
+            details["Uncovered query parameters"] = list(diff_queries)
+
+        diff_request_body = self.diff_request_body_schema(method_id)
+        if diff_request_body:
+            details["Uncovered body request fields "] = diff_request_body
+
+        diff_response_body = self.diff_response_body_schema(method_id)
+        if diff_response_body:
+            details["Uncovered body response fields "] = diff_response_body
 
         if details:
             self.diff.increase_partial(self.golden_spec[method_id], details)
             return True
         return False
+
+    def diff_request_body_schema(self, method_id: str) -> List[str]:
+        if "properties" in self.golden_spec[method_id].body_request_schema:
+            return self.compare_schemas(
+                self.golden_spec[method_id].body_request_schema["properties"],
+                self.testing_spec[method_id].body_request_schema["properties"]
+            )
+        return []
+
+    def diff_response_body_schema(self, method_id: str) -> List[str]:
+        if "properties" in self.golden_spec[method_id].response_schema:
+            return self.compare_schemas(
+                self.golden_spec[method_id].response_schema["properties"],
+                self.testing_spec[method_id].response_schema["properties"]
+            )
+        return []
+
+    def compare_schemas(
+            self, golden_schema: Dict[str, Any], testing_schema: Dict[str, Any], path: str = ""
+    ) -> List[str]:
+        differences = []
+
+        for key in golden_schema:
+            current_path = f"{path}.{key}" if path else key
+
+            if key not in testing_schema:
+                differences.append(current_path)
+
+            elif golden_schema[key]["type"] == "array" and golden_schema[key]["items"]["type"] == "object":
+                differences.extend(
+                    self.compare_schemas(
+                        golden_schema[key]["items"]["properties"],
+                        testing_schema[key]["items"]["properties"],
+                        current_path + ".[*]"
+                    )
+                )
+
+            elif golden_schema[key]["type"] == 'object':
+                differences.extend(
+                    self.compare_schemas(
+                        golden_schema[key]["properties"],
+                        testing_schema[key]["properties"],
+                        current_path
+                    )
+                )
+
+        return differences

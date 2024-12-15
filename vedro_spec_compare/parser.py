@@ -6,11 +6,20 @@ from schemax_openapi import SchemaData, collect_schema_data
 
 
 class SpecMethod:
-    def __init__(self, method: str, route: str, query_params: List[str], response_codes: List[str]):
+    def __init__(
+            self, method: str,
+            route: str,
+            query_params: List[str],
+            request_body_schema: Dict[str, Any],
+            response_codes: List[str],
+            response_body_schema: Dict[str, Any]
+    ):
         self.method = method
         self.route = route
         self.query_params = query_params
+        self.body_request_schema = request_body_schema
         self.response_codes = response_codes
+        self.response_schema = response_body_schema
 
     @staticmethod
     def create(data: Any) -> "SpecMethod":
@@ -19,7 +28,9 @@ class SpecMethod:
                 method=data.http_method,
                 route=data.path,
                 query_params=data.queries,
-                response_codes=[str(data.status)]
+                request_body_schema=data.request_schema,
+                response_codes=[str(data.status)],
+                response_body_schema=data.response_schema
             )
         else:
             raise ValueError("Unsupported data format")

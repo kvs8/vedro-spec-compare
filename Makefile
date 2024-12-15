@@ -13,8 +13,9 @@ install-package:
 	pip3 install --quiet --upgrade setuptools wheel twine
 	python3 setup.py install
 
-.PHONY: check
-check: install-package clean
+.PHONY: e2e
+e2e:
+	cd tests/e2e && pytest -v
 
 .PHONY: check-types
 check-types:

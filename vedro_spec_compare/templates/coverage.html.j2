@@ -106,9 +106,13 @@
                                     {{ method.http_method|upper }} {{ method.http_path }}
                                 </summary>
 
-                                {% for detail in method.details %}
-                                    <hr />
-                                    <p>{{ detail }}</p>
+                                {% for type, diffs in method.details.items() %}
+                                    <h5> {{ type }}:</h5>
+
+                                    {% for diff in diffs %}
+                                        <kbd>{{ diff }}</kbd>
+                                    {% endfor %}
+
                                     <hr />
                                 {% endfor %}
 
