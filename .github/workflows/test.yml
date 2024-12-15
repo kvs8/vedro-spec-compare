@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - "*"
-    paths-ignore:
-      - "**.md"
 
 jobs:
   test:
@@ -24,4 +22,4 @@ jobs:
     - name: Install dependencies
       run: make install
     - name: Test
-      run: make install-package lint
+      run: make install-package lint e2e
