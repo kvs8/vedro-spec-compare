@@ -99,16 +99,28 @@ class Differ:
         if diff_queries:
             details["Uncovered query parameters"] = list(diff_queries)
 
-        diff_body_response = self.diff_response_schema(method_id)
-        if diff_body_response:
-            details["Uncovered response fields "] = diff_body_response
+        diff_request_body = self.diff_request_body_schema(method_id)
+        if diff_request_body:
+            details["Uncovered body request fields "] = diff_request_body
+
+        diff_response_body = self.diff_response_body_schema(method_id)
+        if diff_response_body:
+            details["Uncovered body response fields "] = diff_response_body
 
         if details:
             self.diff.increase_partial(self.golden_spec[method_id], details)
             return True
         return False
 
-    def diff_response_schema(self, method_id: str) -> List[str]:
+    def diff_request_body_schema(self, method_id: str) -> List[str]:
+        if "properties" in self.golden_spec[method_id].body_request_schema:
+            return self.compare_schemas(
+                self.golden_spec[method_id].body_request_schema["properties"],
+                self.testing_spec[method_id].body_request_schema["properties"]
+            )
+        return []
+
+    def diff_response_body_schema(self, method_id: str) -> List[str]:
         if "properties" in self.golden_spec[method_id].response_schema:
             return self.compare_schemas(
                 self.golden_spec[method_id].response_schema["properties"],

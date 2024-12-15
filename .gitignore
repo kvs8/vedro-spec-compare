@@ -6,3 +6,5 @@ build/
 dist/
 *.egg-info/
 .pypirc
+
+tests/e2e/launch

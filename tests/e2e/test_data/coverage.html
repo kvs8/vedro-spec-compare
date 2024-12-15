@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
+        <title>Test coverage</title>
+
+        <script>
+            function showCoverageDetails(showStat, showFull, showPartial, showEmpty) {
+                document.getElementById("coverage-stat").style.display = showStat ? '' : 'none';
+                document.getElementById("coverage-details-full").style.display = showFull ? 'block' : 'none';
+                document.getElementById("coverage-details-partial").style.display = showPartial ? 'block' : 'none';
+                document.getElementById("coverage-details-empty").style.display = showEmpty ? 'block' : 'none';
+            }
+
+            function coverageDetailsAll() {
+                showCoverageDetails(true, true, true, true);
+            }
+
+            function coverageDetailsFull() {
+                showCoverageDetails(false, true, false, false);
+            }
+
+            function coverageDetailsPartial() {
+                showCoverageDetails(false, false, true, false);
+            }
+
+            function coverageDetailsEmpty() {
+                showCoverageDetails(false, false, false, true);
+            }
+        </script>
+
+        <style>
+            button:hover {
+                opacity: 0.6;
+            }
+            .center-text {
+                text-align: center;
+                border-radius: 20px;
+            }
+            .flex-container {
+                display: flex;
+                width: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="container">
+
+            <h1>Test coverage:</h1>
+
+            <div class="grid">
+                <button class="contrast pico-background-blue-500" style="color: #0F1114" onclick="coverageDetailsAll()">
+                    All: 4
+                </button>
+
+                <button class="contrast pico-background-green-500 " style="color: #0F1114" onclick="coverageDetailsFull()">
+                    Full: 1
+                </button>
+
+                <button class="contrast pico-background-pumpkin-300" style="color: #0F1114" onclick="coverageDetailsPartial()">
+                    Partial: 2
+                </button>
+
+                <button class="contrast pico-background-red-500" style="color: #0F1114" onclick="coverageDetailsEmpty()">
+                    Empty: 1
+                </button>
+            </div>
+
+        </header>
+
+
+        <main class="container">
+
+            <div class="flex-container" role="group" id="coverage-stat">
+                
+                    <div class="pico-background-green-500 center-text" style="flex: 0 0 25.0%; color: #0F1114;">
+                        25.00%
+                    </div>
+                
+
+                
+                    <div class="pico-background-pumpkin-300 center-text" style="flex: 0 0 50.0%; color: #0F1114;">
+                        50.00%
+                    </div>
+                
+
+                
+                    <div class="pico-background-red-500 center-text" style="flex: 0 0 25.0%; color: #0F1114;">
+                        25.00%
+                    </div>
+                
+            </div>
+
+            
+                <div id="coverage-details-full">
+                    
+                        <h2 class="pico-color-green-500">Coverage details full:</h2>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    GET /v1/cities/list
+                                </summary>
+
+                                
+
+                            </details>
+                        
+                    
+                </div>
+            
+                <div id="coverage-details-partial">
+                    
+                        <h2 class="pico-color-pumpkin-300">Coverage details partial:</h2>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    GET /v1/cities
+                                </summary>
+
+                                
+                                    <h5> Uncovered query parameters:</h5>
+
+                                    
+                                        <kbd>locale</kbd>
+                                    
+
+                                    <hr />
+                                
+                                    <h5> Uncovered body response fields :</h5>
+
+                                    
+                                        <kbd>name</kbd>
+                                    
+
+                                    <hr />
+                                
+
+                            </details>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    POST /v1/cities
+                                </summary>
+
+                                
+                                    <h5> Uncovered body request fields :</h5>
+
+                                    
+                                        <kbd>name</kbd>
+                                    
+
+                                    <hr />
+                                
+
+                            </details>
+                        
+                    
+                </div>
+            
+                <div id="coverage-details-empty">
+                    
+                        <h2 class="pico-color-red-500">Coverage details empty:</h2>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    DELETE /v1/cities
+                                </summary>
+
+                                
+
+                            </details>
+                        
+                    
+                </div>
+            
+
+        </main>
+    </body>
+</html>
