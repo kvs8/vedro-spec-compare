@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
+        <title>Discrepancy report</title>
+
+        <style>
+            button:hover {
+                opacity: 0.6;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="container">
+            <h1>Discrepancy report:</h1>
+        </header>
+
+        <main class="container">
+
+            {% for discrepancy_type, methods, color in [('Partially described', methods_partial, 'pumpkin-300'), ('Not described', methods_empty, 'red-500')] %}
+                <div>
+                    {% if methods %}
+                        <h2 class="pico-color-{{ color }}">{{ discrepancy_type }}:</h2>
+                        {% for method in methods %}
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    {{ method.http_method|upper }} {{ method.http_path }}
+                                </summary>
+
+                                {% for type, diffs in method.details.items() %}
+                                    <h5> {{ type }}:</h5>
+
+                                    {% for diff in diffs %}
+                                        <kbd>{{ diff }}</kbd>
+                                    {% endfor %}
+
+                                    <hr />
+                                {% endfor %}
+
+                            </details>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+        </main>
+    </body>
+</html>

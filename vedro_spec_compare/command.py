@@ -1,6 +1,7 @@
 import argparse
 
 from .coverage import coverage
+from .discrepancy import discrepancy
 
 
 def command() -> None:
@@ -14,6 +15,14 @@ def command() -> None:
         '--report-path', type=str, help='The path of the coverage report', default='coverage.html'
     )
     coverage_parser.set_defaults(func=coverage)
+
+    discrepancy_parser = subparsers.add_parser('discrepancy', help='Generate discrepancy report')
+    discrepancy_parser.add_argument('golden_spec_path', type=str, help='Path to the golden OpenAPI spec')
+    discrepancy_parser.add_argument('testing_spec_path', type=str, help='Path to the testing OpenAPI spec')
+    discrepancy_parser.add_argument(
+        '--report-path', type=str, help='The path of the discrepancy report', default='discrepancy.html'
+    )
+    discrepancy_parser.set_defaults(func=discrepancy)
 
     args = parser.parse_args()
     args.func(args)
