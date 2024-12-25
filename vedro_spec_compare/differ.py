@@ -80,7 +80,11 @@ class Differ:
         return set(self.golden_spec[method_id].query_params) - set(self.testing_spec[method_id].query_params)
 
     def diff_request_body_schema(self, method_id: str) -> List[str]:
-        if "properties" in self.golden_spec[method_id].body_request_schema:
+        if (
+            "properties" in self.golden_spec[method_id].body_request_schema
+            and
+            "properties" in self.testing_spec[method_id].body_request_schema
+        ):
             return self.compare_schemas(
                 self.golden_spec[method_id].body_request_schema["properties"],
                 self.testing_spec[method_id].body_request_schema["properties"]
@@ -88,7 +92,11 @@ class Differ:
         return []
 
     def diff_response_body_schema(self, method_id: str) -> List[str]:
-        if "properties" in self.golden_spec[method_id].response_schema:
+        if (
+            "properties" in self.golden_spec[method_id].response_schema
+            and
+            "properties" in self.testing_spec[method_id].response_schema
+        ):
             return self.compare_schemas(
                 self.golden_spec[method_id].response_schema["properties"],
                 self.testing_spec[method_id].response_schema["properties"]
