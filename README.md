@@ -5,7 +5,8 @@
 
 # Description
 
-`vedro-spec-compare` is a tool to compare two OpenAPI specs and generate a coverage report
+`vedro-spec-compare` is a tool to compare two OpenAPI specs and generate reports
+
 
 # Installation
 
@@ -17,25 +18,30 @@ pip3 install vedro-spec-compare
 # Usage
 
 ## Help
+
 ```bash
-vsc -h
+vsc --help
 ```
 ```
-usage: vsc [-h] {coverage} ...
+usage: vsc [-h] {coverage,discrepancy} ...
 
 vedro-spec-compare commands
 
 positional arguments:
-  {coverage}  Available commands
-    coverage  Generate coverage report
+  {coverage,discrepancy}
+                        Available commands
+    coverage            Generate coverage report
+    discrepancy         Generate discrepancy report
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
 ```
 
+
 ## Coverage
+
 ```bash
-vsc coverage -h
+vsc coverage --help
 ```
 ```
 usage: vsc coverage [-h] [--report-path REPORT_PATH] golden_spec_path testing_spec_path
@@ -51,9 +57,18 @@ options:
 ```
 
 ### Examples
+
 #### From yml files
 ```bash
 vsc coverage golden_spec.yml testing_spec.yml
+```
+```bash
+google-chrome coverage.html 
+```
+
+#### From json files
+```bash
+vsc coverage golden_spec.json testing_spec.json
 ```
 ```bash
 google-chrome coverage.html 
@@ -69,8 +84,61 @@ google-chrome coverage_report.html
 
 #### From urls
 ```bash
-vsc coverage https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore-expanded.yaml https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml
+vsc coverage https://golden/openapi.yaml https://testing/openapi.yaml
 ```
 ```bash
 google-chrome coverage.html 
+```
+
+
+## Discrepancy
+
+```bash
+vsc discrepancy --help
+```
+```
+usage: vsc discrepancy [-h] [--report-path REPORT_PATH] golden_spec_path testing_spec_path
+
+positional arguments:
+  golden_spec_path      Path to the golden OpenAPI spec
+  testing_spec_path     Path to the testing OpenAPI spec
+
+options:
+  -h, --help            show this help message and exit
+  --report-path REPORT_PATH
+                        The path of the discrepancy report
+```
+
+### Examples
+
+#### From yml files
+```bash
+vsc discrepancy golden_spec.yml testing_spec.yml
+```
+```bash
+google-chrome discrepancy.html 
+```
+
+#### From json files
+```bash
+vsc discrepancy golden_spec.json testing_spec.json
+```
+```bash
+google-chrome discrepancy.html 
+```
+
+#### With report path
+```bash
+vsc discrepancy golden_spec.yml testing_spec.yml --report-path coverage_report.html
+```
+```bash
+google-chrome discrepancy.html 
+```
+
+#### From urls
+```bash
+vsc discrepancy https://golden/openapi.yaml https://testing/openapi.yaml
+```
+```bash
+google-chrome discrepancy.html 
 ```
