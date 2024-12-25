@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from .differ import Differ
+from .differ import DifferCoverage
 from .generator import Generator
 from .parser import Parser
 
@@ -20,7 +20,7 @@ def coverage(args: Any) -> None:
         testing_spec_method = Parser.parse(args.testing_spec_path)
 
         logger.info("Defining the difference")
-        diff = Differ(golden_spec_method, testing_spec_method).get_diff()
+        diff = DifferCoverage(golden_spec_method, testing_spec_method).get_diff()
 
         logger.info(f"Generating the coverage report: {args.report_path}")
         Generator().coverage_report(diff, args.report_path)
