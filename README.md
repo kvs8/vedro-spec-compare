@@ -5,7 +5,7 @@
 
 # Description
 
-`vedro-spec-compare` is a tool to compare two OpenAPI specs and generate reports
+`vedro-spec-compare` is a tool for comparing two OpenAPI specifications and generating reports.
 
 
 # Installation
@@ -39,6 +39,9 @@ options:
 
 
 ## Coverage
+![Coverage report](images/coverage_report.png)
+
+The `coverage` command compares a "golden" OpenAPI spec with a "testing" spec and generates a coverage report.
 
 ```bash
 vsc coverage --help
@@ -74,6 +77,14 @@ vsc coverage golden_spec.json testing_spec.json
 google-chrome coverage.html 
 ```
 
+#### From urls
+```bash
+vsc coverage https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/coverage/golden.yml https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/coverage/testing.yml
+```
+```bash
+google-chrome coverage.html 
+```
+
 #### With report path
 ```bash
 vsc coverage golden_spec.yml testing_spec.yml --report-path coverage_report.html
@@ -82,16 +93,11 @@ vsc coverage golden_spec.yml testing_spec.yml --report-path coverage_report.html
 google-chrome coverage_report.html 
 ```
 
-#### From urls
-```bash
-vsc coverage https://golden/openapi.yaml https://testing/openapi.yaml
-```
-```bash
-google-chrome coverage.html 
-```
-
 
 ## Discrepancy
+![Discrepancy report](images/discrepancy_report.png)
+
+The `discrepancy` command highlights differences or inconsistencies between a "golden" spec and a "testing" spec.
 
 ```bash
 vsc discrepancy --help
@@ -127,17 +133,17 @@ vsc discrepancy golden_spec.json testing_spec.json
 google-chrome discrepancy.html 
 ```
 
-#### With report path
+#### From urls
 ```bash
-vsc discrepancy golden_spec.yml testing_spec.yml --report-path coverage_report.html
+vsc discrepancy https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/discrepancy/golden.yml https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/discrepancy/testing.yml
 ```
 ```bash
 google-chrome discrepancy.html 
 ```
 
-#### From urls
+#### With report path
 ```bash
-vsc discrepancy https://golden/openapi.yaml https://testing/openapi.yaml
+vsc discrepancy golden_spec.yml testing_spec.yml --report-path coverage_report.html
 ```
 ```bash
 google-chrome discrepancy.html 
