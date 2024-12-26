@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
+        <title>Discrepancy report</title>
+
+        <style>
+            button:hover {
+                opacity: 0.6;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="container">
+            <h1>Discrepancy report:</h1>
+        </header>
+
+        <main class="container">
+
+            
+                <div>
+                    
+                        <h2 class="pico-color-pumpkin-300">Partially described:</h2>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    GET /v1/cities
+                                </summary>
+
+                                
+                                    <h5> Undocumented query parameters:</h5>
+
+
+                                        <kbd>locale</kbd>
+
+
+                                    <hr />
+
+                                    <h5> Undocumented body response fields :</h5>
+
+
+                                        <kbd>name</kbd>
+
+
+                                    <hr />
+
+
+                            </details>
+
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    POST /v1/cities
+                                </summary>
+
+
+                                    <h5> Undocumented body request fields :</h5>
+
+                                    
+                                        <kbd>name</kbd>
+                                    
+
+                                    <hr />
+                                
+
+                            </details>
+                        
+                    
+                </div>
+            
+                <div>
+                    
+                        <h2 class="pico-color-red-500">Not described:</h2>
+                        
+                            <details>
+                                <summary role="button" class="outline secondary">
+                                    DELETE /v1/cities
+                                </summary>
+
+                                
+
+                            </details>
+                        
+                    
+                </div>
+            
+
+        </main>
+    </body>
+</html>

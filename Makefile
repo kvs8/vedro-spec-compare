@@ -1,6 +1,6 @@
 .PHONY: clean
 clean:
-	rm -r build dist vedro_spec_compare.egg-info .mypy_cache .pytest_cache
+	rm -r build dist vedro_spec_compare.egg-info
 
 .PHONY: install
 install:
@@ -15,7 +15,7 @@ install-package:
 
 .PHONY: e2e
 e2e:
-	cd tests/e2e && pytest -v
+	cd tests/e2e && pytest -vv
 
 .PHONY: check-types
 check-types:

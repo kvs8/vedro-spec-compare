@@ -1,17 +1,17 @@
 import logging
 from typing import Any
 
-from .differ import DifferCoverage
+from .differ import DifferDiscrepancy
 from .generator import Generator
 from .parser import Parser
 
 
-def coverage(args: Any) -> None:
+def discrepancy(args: Any) -> None:
     logging.basicConfig(level=logging.INFO, format='%(message)s')
-    logger = logging.getLogger("Coverage")
+    logger = logging.getLogger("Discrepancy")
 
     try:
-        logger.info("Determination of the test coverage")
+        logger.info("Determination of discrepancy in doc regarding tests")
 
         logger.info(f"Parsing the golden spec: {args.golden_spec_path}")
         golden_spec_method = Parser.parse(args.golden_spec_path)
@@ -20,10 +20,10 @@ def coverage(args: Any) -> None:
         testing_spec_method = Parser.parse(args.testing_spec_path)
 
         logger.info("Defining the difference")
-        diff = DifferCoverage(golden_spec_method, testing_spec_method).get_diff()
+        diff = DifferDiscrepancy(testing_spec_method, golden_spec_method).get_diff()
 
-        logger.info(f"Generating the coverage report: {args.report_path}")
-        Generator().coverage_report(diff, args.report_path)
+        logger.info(f"Generating the discrepancy report: {args.report_path}")
+        Generator().discrepancy_report(diff, args.report_path)
 
     except FileNotFoundError as e:
         logger.critical(f"{e}")

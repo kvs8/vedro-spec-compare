@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Optional
+from abc import abstractmethod
+from typing import Any, Dict, List, Optional, Set
 
 from .parser import SpecMethod
 
@@ -68,52 +69,22 @@ class Differ:
         self.testing_spec = testing_spec
         self.diff = Diff()
 
+    @abstractmethod
     def get_diff(self) -> Diff:
-        for method_id in self.golden_spec.keys():
-            self.diff.increase_all()
+        pass
 
-            if self.is_method_not_covered(method_id):
-                continue
+    def diff_response_codes(self, method_id: str) -> Set[str]:
+        return set(self.golden_spec[method_id].response_codes) - set(self.testing_spec[method_id].response_codes)
 
-            if self.is_partial_method(method_id):
-                continue
-
-            self.diff.increase_full(self.golden_spec[method_id])
-
-        return self.diff
-
-    def is_method_not_covered(self, method_id: str) -> bool:
-        if method_id not in self.testing_spec:
-            self.diff.increase_empty(self.golden_spec[method_id])
-            return True
-        return False
-
-    def is_partial_method(self, method_id: str) -> bool:
-        details = {}
-
-        diff_codes = set(self.golden_spec[method_id].response_codes) - set(self.testing_spec[method_id].response_codes)
-        if diff_codes:
-            details["Uncovered HTTP codes"] = list(diff_codes)
-
-        diff_queries = set(self.golden_spec[method_id].query_params) - set(self.testing_spec[method_id].query_params)
-        if diff_queries:
-            details["Uncovered query parameters"] = list(diff_queries)
-
-        diff_request_body = self.diff_request_body_schema(method_id)
-        if diff_request_body:
-            details["Uncovered body request fields "] = diff_request_body
-
-        diff_response_body = self.diff_response_body_schema(method_id)
-        if diff_response_body:
-            details["Uncovered body response fields "] = diff_response_body
-
-        if details:
-            self.diff.increase_partial(self.golden_spec[method_id], details)
-            return True
-        return False
+    def diff_queries(self, method_id: str) -> Set[str]:
+        return set(self.golden_spec[method_id].query_params) - set(self.testing_spec[method_id].query_params)
 
     def diff_request_body_schema(self, method_id: str) -> List[str]:
-        if "properties" in self.golden_spec[method_id].body_request_schema:
+        if (
+            "properties" in self.golden_spec[method_id].body_request_schema
+            and
+            "properties" in self.testing_spec[method_id].body_request_schema
+        ):
             return self.compare_schemas(
                 self.golden_spec[method_id].body_request_schema["properties"],
                 self.testing_spec[method_id].body_request_schema["properties"]
@@ -121,7 +92,11 @@ class Differ:
         return []
 
     def diff_response_body_schema(self, method_id: str) -> List[str]:
-        if "properties" in self.golden_spec[method_id].response_schema:
+        if (
+            "properties" in self.golden_spec[method_id].response_schema
+            and
+            "properties" in self.testing_spec[method_id].response_schema
+        ):
             return self.compare_schemas(
                 self.golden_spec[method_id].response_schema["properties"],
                 self.testing_spec[method_id].response_schema["properties"]
@@ -158,3 +133,73 @@ class Differ:
                 )
 
         return differences
+
+
+class DifferCoverage(Differ):
+    def get_diff(self) -> Diff:
+        for method_id in self.golden_spec.keys():
+            self.diff.increase_all()
+
+            if method_id not in self.testing_spec:
+                self.diff.increase_empty(self.golden_spec[method_id])
+                continue
+
+            details = {}
+
+            diff_codes = self.diff_response_codes(method_id)
+            if diff_codes:
+                details["Uncovered HTTP codes"] = list(diff_codes)
+
+            diff_queries = self.diff_queries(method_id)
+            if diff_queries:
+                details["Uncovered query parameters"] = list(diff_queries)
+
+            diff_request_body = self.diff_request_body_schema(method_id)
+            if diff_request_body:
+                details["Uncovered body request fields "] = diff_request_body
+
+            diff_response_body = self.diff_response_body_schema(method_id)
+            if diff_response_body:
+                details["Uncovered body response fields "] = diff_response_body
+
+            if details:
+                self.diff.increase_partial(self.golden_spec[method_id], details)
+                continue
+
+            self.diff.increase_full(self.golden_spec[method_id])
+
+        return self.diff
+
+
+class DifferDiscrepancy(Differ):
+    def get_diff(self) -> Diff:
+        for method_id in self.golden_spec.keys():
+            self.diff.increase_all()
+
+            if method_id not in self.testing_spec:
+                self.diff.increase_empty(self.golden_spec[method_id])
+                continue
+
+            details = {}
+
+            diff_codes = self.diff_response_codes(method_id)
+            if diff_codes:
+                details["Undocumented HTTP codes"] = list(diff_codes)
+
+            diff_queries = self.diff_queries(method_id)
+            if diff_queries:
+                details["Undocumented query parameters"] = list(diff_queries)
+
+            diff_request_body = self.diff_request_body_schema(method_id)
+            if diff_request_body:
+                details["Undocumented body request fields "] = diff_request_body
+
+            diff_response_body = self.diff_response_body_schema(method_id)
+            if diff_response_body:
+                details["Undocumented body response fields "] = diff_response_body
+
+            if details:
+                self.diff.increase_partial(self.golden_spec[method_id], details)
+                continue
+
+        return self.diff
