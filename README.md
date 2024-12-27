@@ -39,7 +39,7 @@ options:
 
 
 ## Coverage
-![Coverage report](images/coverage_report.png)
+![Coverage report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/coverage_report.png)
 
 The `coverage` command compares a "golden" OpenAPI spec with a "testing" spec and generates a coverage report.
 
@@ -95,7 +95,7 @@ google-chrome coverage_report.html
 
 
 ## Discrepancy
-![Discrepancy report](images/discrepancy_report.png)
+![Discrepancy report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/discrepancy_report.png)
 
 The `discrepancy` command highlights differences or inconsistencies between a "golden" spec and a "testing" spec.
 
