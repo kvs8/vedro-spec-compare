@@ -39,9 +39,10 @@ options:
 
 
 ## Coverage
-![Coverage report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/coverage_report.png)
-
 The `coverage` command compares a "golden" OpenAPI spec with a "testing" spec and generates a coverage report.
+[Sample report](https://github.com/kvs8/vedro-spec-compare/tree/main/tests/e2e/test_data/coverage).
+
+![Coverage report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/coverage_report.png)
 
 ```bash
 vsc coverage --help
@@ -95,9 +96,10 @@ google-chrome coverage_report.html
 
 
 ## Discrepancy
-![Discrepancy report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/discrepancy_report.png)
+The `discrepancy` command highlights differences or inconsistencies between a "golden" spec and a "testing" spec. 
+[Sample report](https://github.com/kvs8/vedro-spec-compare/tree/main/tests/e2e/test_data/discrepancy).
 
-The `discrepancy` command highlights differences or inconsistencies between a "golden" spec and a "testing" spec.
+![Discrepancy report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/discrepancy_report.png)
 
 ```bash
 vsc discrepancy --help
