@@ -25,5 +25,5 @@ def discrepancy(args: Any) -> None:
         logger.info(f"Generating the discrepancy report: {args.report_path}")
         Generator().discrepancy_report(diff, args.report_path)
 
-    except FileNotFoundError as e:
+    except ValueError as e:
         logger.critical(f"{e}")

@@ -25,5 +25,5 @@ def coverage(args: Any) -> None:
         logger.info(f"Generating the coverage report: {args.report_path}")
         Generator().coverage_report(diff, args.report_path)
 
-    except FileNotFoundError as e:
+    except ValueError as e:
         logger.critical(f"{e}")
