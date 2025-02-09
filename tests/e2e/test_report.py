@@ -199,3 +199,94 @@ def test_generate_discrepancy_report_with_fail_fetch_data_by_url():
         f"Parsing the golden spec: {incorrect_url}\n"
         f"Failed to fetch data from {incorrect_url}: status is 404\n"
     ) == stderr
+
+
+def test_generate_changes_report():
+    added_request_file('test_data/changes/current.yml')
+    added_request_file('test_data/changes/previous.yml')
+
+    stdout, stderr = run(
+        command='vsc changes current.yml previous.yml',
+        cwd=f'{os.getcwd()}/launch'
+    )
+
+    assert (
+        "Determination changes to the Open API spec\n"
+        "Parsing the current spec: current.yml\n"
+        "Parsing the previous spec: previous.yml\n"
+        "Defining the difference\n"
+        "Generating the changes report: changes.html\n"
+    ) == stderr
+    assert os.path.exists('launch/changes.html')
+
+    with (
+        open("test_data/changes/changes.html", "r") as file1,
+        open("launch/changes.html", "r") as file2
+    ):
+        soup1 = BeautifulSoup(file1, "html.parser")
+        soup2 = BeautifulSoup(file2, "html.parser")
+
+        text1 = soup1.get_text(strip=True)
+        text2 = soup2.get_text(strip=True)
+
+        assert text1 == text2
+        assert soup1 == soup2
+
+
+def test_generate_changes_report_with_report_path():
+    added_request_file('test_data/changes/current.yml')
+    added_request_file('test_data/changes/previous.yml')
+
+    stdout, stderr = run(
+        command='vsc changes current.yml previous.yml --report-path report/changes.html',
+        cwd=f'{os.getcwd()}/launch'
+    )
+
+    assert (
+        "Determination changes to the Open API spec\n"
+        "Parsing the current spec: current.yml\n"
+        "Parsing the previous spec: previous.yml\n"
+        "Defining the difference\n"
+        "Generating the changes report: report/changes.html\n"
+    ) == stderr
+    assert os.path.exists('launch/report/changes.html')
+
+    with (
+        open("test_data/changes/changes.html", "r") as file1,
+        open("launch/report/changes.html", "r") as file2
+    ):
+        soup1 = BeautifulSoup(file1, "html.parser")
+        soup2 = BeautifulSoup(file2, "html.parser")
+
+        text1 = soup1.get_text(strip=True)
+        text2 = soup2.get_text(strip=True)
+
+        assert text1 == text2
+        assert soup1 == soup2
+
+
+def test_generate_changes_report_with_non_existent_spec_file():
+    stdout, stderr = run(
+        command='vsc changes current.yml previous.yml',
+        cwd=f'{os.getcwd()}/launch'
+    )
+
+    assert (
+        "Determination changes to the Open API spec\n"
+        "Parsing the current spec: current.yml\n"
+        "Failed to open file current.yml: file not found\n"
+    ) == stderr
+
+
+def test_generate_changes_report_with_fail_fetch_data_by_url():
+    incorrect_url = "https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/current.yml"
+    stdout, stderr = run(
+        command=f'vsc changes {incorrect_url} {incorrect_url}',
+        cwd=f'{os.getcwd()}/launch'
+    )
+
+    assert (
+        "Determination changes to the Open API spec\n"
+        f"Parsing the current spec: {incorrect_url}\n"
+        f"Failed to fetch data from {incorrect_url}: status is 404\n"
+    ) == stderr

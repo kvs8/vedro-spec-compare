@@ -20,7 +20,7 @@ def discrepancy(args: Any) -> None:
         testing_spec_method = Parser.parse(args.testing_spec_path)
 
         logger.info("Defining the difference")
-        diff = DifferDiscrepancy(testing_spec_method, golden_spec_method).get_diff()
+        diff = DifferDiscrepancy(golden_spec_method, testing_spec_method).get_diff()
 
         logger.info(f"Generating the discrepancy report: {args.report_path}")
         Generator().discrepancy_report(diff, args.report_path)

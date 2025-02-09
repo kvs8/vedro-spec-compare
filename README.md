@@ -23,15 +23,16 @@ pip3 install vedro-spec-compare
 vsc --help
 ```
 ```
-usage: vsc [-h] {coverage,discrepancy} ...
+usage: vsc [-h] {coverage,discrepancy,changes} ...
 
 vedro-spec-compare commands
 
 positional arguments:
-  {coverage,discrepancy}
+  {coverage,discrepancy,changes}
                         Available commands
     coverage            Generate coverage report
     discrepancy         Generate discrepancy report
+    changes             Generate changes report
 
 options:
   -h, --help            show this help message and exit
@@ -149,4 +150,61 @@ vsc discrepancy golden_spec.yml testing_spec.yml --report-path coverage_report.h
 ```
 ```bash
 google-chrome discrepancy.html 
+```
+
+
+## Changes
+The `changes` command shows the changes between two versions of the specification: the current and the previous.
+[Sample report](https://github.com/kvs8/vedro-spec-compare/tree/main/tests/e2e/test_data/changes).
+
+![Changes report](https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/images/changes_report.png)
+
+```bash
+vsc changes --help
+```
+```
+usage: vsc changes [-h] [--report-path REPORT_PATH] current_spec_path previous_spec_path
+
+positional arguments:
+  current_spec_path     Path to the current OpenAPI spec
+  previous_spec_path    Path to the previous OpenAPI spec
+
+options:
+  -h, --help            show this help message and exit
+  --report-path REPORT_PATH
+                        The path of the changes report
+```
+
+### Examples
+
+#### From yml files
+```bash
+vsc changes current_spec.yml previous_spec.yml
+```
+```bash
+google-chrome changes.html 
+```
+
+#### From json files
+```bash
+vsc changes current_spec.json previous_spec.json
+```
+```bash
+google-chrome changes.html 
+```
+
+#### From urls
+```bash
+vsc changes https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/current.yml https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/preious.yml
+```
+```bash
+google-chrome changes.html 
+```
+
+#### With report path
+```bash
+vsc changes current_spec.yml previous_spec.yml --report-path changes_report.html
+```
+```bash
+google-chrome changes.html 
 ```

@@ -3,13 +3,14 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, Template
 
-from .differ import Diff
+from .differ import DiffDataChanges, DiffDataCoverage, DiffDataDiscrepancy
 
 
 class Generator:
     _PATH_TEMPLATES = os.path.dirname(os.path.realpath(__file__)) + '/templates'
     _TEMPLATE_COVERAGE = 'coverage.html.j2'
     _TEMPLATE_DISCREPANCY = 'discrepancy.html.j2'
+    _TEMPLATE_CHANGES = 'changes.html.j2'
 
     def __init__(self) -> None:
         self._templates = Environment(loader=FileSystemLoader(self._PATH_TEMPLATES))
@@ -29,16 +30,23 @@ class Generator:
         with open(file_path, 'w') as file:
             file.write(template.render(**kwargs))
 
-    def coverage_report(self, diff: Diff, file_path: str) -> None:
+    def coverage_report(self, diff: DiffDataCoverage, file_path: str) -> None:
         self._generate_by_template(
             file_path=file_path,
             template_name=self._TEMPLATE_COVERAGE,
-            **diff.data()
+            **vars(diff)
         )
 
-    def discrepancy_report(self, diff: Diff, file_path: str) -> None:
+    def discrepancy_report(self, diff: DiffDataDiscrepancy, file_path: str) -> None:
         self._generate_by_template(
             file_path=file_path,
             template_name=self._TEMPLATE_DISCREPANCY,
-            **diff.data()
+            **vars(diff)
+        )
+
+    def changes_report(self, diff: DiffDataChanges, file_path: str) -> None:
+        self._generate_by_template(
+            file_path=file_path,
+            template_name=self._TEMPLATE_CHANGES,
+            **vars(diff)
         )
