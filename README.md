@@ -195,7 +195,7 @@ google-chrome changes.html
 
 #### From urls
 ```bash
-vsc changes https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/current.yml https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/preious.yml
+vsc changes https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/current.yml https://raw.githubusercontent.com/kvs8/vedro-spec-compare/refs/heads/main/tests/e2e/test_data/changes/previous.yml
 ```
 ```bash
 google-chrome changes.html 
