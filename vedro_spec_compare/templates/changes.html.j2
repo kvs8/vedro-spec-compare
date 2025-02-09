@@ -6,7 +6,7 @@
         <meta name="color-scheme" content="light dark" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
-        <title>Discrepancy report</title>
+        <title>Changes report</title>
 
         <style>
             button:hover {
@@ -17,15 +17,15 @@
 
     <body>
         <header class="container">
-            <h1>Discrepancy report:</h1>
+            <h1>Changes report:</h1>
         </header>
 
         <main class="container">
 
-            {% for discrepancy_type, methods, color in [('Partially described', methods_partial, 'pumpkin-300'), ('Not described', methods_empty, 'red-500')] %}
+            {% for changes_type, methods, color in [('New methods', added, 'green-500'), ('Modified methods', modified, 'pumpkin-300'), ('Deleted methods', deleted, 'red-500')] %}
                 <div>
                     {% if methods %}
-                        <h2 class="pico-color-{{ color }}">{{ discrepancy_type }}:</h2>
+                        <h2 class="pico-color-{{ color }}">{{ changes_type }}:</h2>
                         {% for method in methods %}
                             <details>
                                 <summary role="button" class="outline secondary">

@@ -1,0 +1,90 @@
+openapi: 3.0.1
+
+info:
+  title: Cities API
+  version: "1.0"
+
+paths:
+  /v1/cities:
+    get:
+      parameters:
+        - in: query
+          name: city_id
+          schema:
+            type: string
+        - in: query
+          name: lang
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city_id:
+                    type: number
+                  city_name:
+                    type: string
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: number
+                city_name:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city_id:
+                    type: number
+                  city_name:
+                    type: string
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                city_id:
+                  type: number
+                city_name:
+                  type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city_id:
+                    type: number
+                  city_name:
+                    type: string
+  /v1/cities/list:
+    get:
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city_id:
+                    type: number
+                  city_name:
+                    type: string

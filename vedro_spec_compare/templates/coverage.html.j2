@@ -106,7 +106,7 @@
                                     {{ method.http_method|upper }} {{ method.http_path }}
                                 </summary>
 
-                                {% for type, diffs in method.details.items() %}
+                                {% for type, diffs in method.diff_details.items() %}
                                     <h5> {{ type }}:</h5>
 
                                     {% for diff in diffs %}
