@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import requests
 import yaml
-from schemax_openapi import SchemaData, collect_schema_data
+from schemax import SchemaData, collect_schema_data
 
 
 class SpecMethod:
