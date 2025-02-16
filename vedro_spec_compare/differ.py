@@ -96,14 +96,14 @@ class Differ:
                 differences.append(current_path)
             elif golden_schema[key]["type"] == "array" and golden_schema[key]["items"]["type"] == "object":
                 differences.extend(self.compare_schemas(
-                    golden_schema[key]["items"]["properties"],
-                    testing_schema[key]["items"]["properties"],
+                    golden_schema[key]["items"].get("properties", {}),
+                    testing_schema[key]["items"].get("properties", {}),
                     current_path + ".[*]"
                 ))
             elif golden_schema[key]["type"] == 'object':
                 differences.extend(self.compare_schemas(
-                    golden_schema[key]["properties"],
-                    testing_schema[key]["properties"],
+                    golden_schema[key].get("properties", {}),
+                    testing_schema[key].get("properties", {}),
                     current_path
                 ))
         return differences
