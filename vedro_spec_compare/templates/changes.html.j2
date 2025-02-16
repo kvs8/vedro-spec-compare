@@ -12,6 +12,13 @@
             button:hover {
                 opacity: 0.6;
             }
+            .center-text {
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60vh;
+            }
         </style>
     </head>
 
@@ -21,32 +28,35 @@
         </header>
 
         <main class="container">
+            {% if added or modified or deleted %}
+                {% for changes_type, methods, color in [('New methods', added, 'green-500'), ('Modified methods', modified, 'pumpkin-300'), ('Deleted methods', deleted, 'red-500')] %}
+                    <div>
+                        {% if methods %}
+                            <h2 class="pico-color-{{ color }}">{{ changes_type }}:</h2>
+                            {% for method in methods %}
+                                <details>
+                                    <summary role="button" class="outline secondary">
+                                        {{ method.http_method|upper }} {{ method.http_path }}
+                                    </summary>
 
-            {% for changes_type, methods, color in [('New methods', added, 'green-500'), ('Modified methods', modified, 'pumpkin-300'), ('Deleted methods', deleted, 'red-500')] %}
-                <div>
-                    {% if methods %}
-                        <h2 class="pico-color-{{ color }}">{{ changes_type }}:</h2>
-                        {% for method in methods %}
-                            <details>
-                                <summary role="button" class="outline secondary">
-                                    {{ method.http_method|upper }} {{ method.http_path }}
-                                </summary>
+                                    {% for type, diffs in method.diff_details.items() %}
+                                        <h5> {{ type }}:</h5>
 
-                                {% for type, diffs in method.diff_details.items() %}
-                                    <h5> {{ type }}:</h5>
+                                        {% for diff in diffs %}
+                                            <kbd>{{ diff }}</kbd>
+                                        {% endfor %}
 
-                                    {% for diff in diffs %}
-                                        <kbd>{{ diff }}</kbd>
+                                        <hr />
                                     {% endfor %}
 
-                                    <hr />
-                                {% endfor %}
-
-                            </details>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            {% endfor %}
+                                </details>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h1 class= "pico-color-blue-500 center-text">No changes detected :(</h1>
+            {% endif %}
 
         </main>
     </body>

@@ -12,6 +12,13 @@
             button:hover {
                 opacity: 0.6;
             }
+            .center-text {
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 60vh;
+            }
         </style>
     </head>
 
@@ -22,31 +29,35 @@
 
         <main class="container">
 
-            {% for discrepancy_type, methods, color in [('Partially described', methods_partial, 'pumpkin-300'), ('Not described', methods_empty, 'red-500')] %}
-                <div>
-                    {% if methods %}
-                        <h2 class="pico-color-{{ color }}">{{ discrepancy_type }}:</h2>
-                        {% for method in methods %}
-                            <details>
-                                <summary role="button" class="outline secondary">
-                                    {{ method.http_method|upper }} {{ method.http_path }}
-                                </summary>
+            {% if methods_partial or methods_empty %}
+                {% for discrepancy_type, methods, color in [('Partially described', methods_partial, 'pumpkin-300'), ('Not described', methods_empty, 'red-500')] %}
+                    <div>
+                        {% if methods %}
+                            <h2 class="pico-color-{{ color }}">{{ discrepancy_type }}:</h2>
+                            {% for method in methods %}
+                                <details>
+                                    <summary role="button" class="outline secondary">
+                                        {{ method.http_method|upper }} {{ method.http_path }}
+                                    </summary>
 
-                                {% for type, diffs in method.diff_details.items() %}
-                                    <h5> {{ type }}:</h5>
+                                    {% for type, diffs in method.diff_details.items() %}
+                                        <h5> {{ type }}:</h5>
 
-                                    {% for diff in diffs %}
-                                        <kbd>{{ diff }}</kbd>
+                                        {% for diff in diffs %}
+                                            <kbd>{{ diff }}</kbd>
+                                        {% endfor %}
+
+                                        <hr />
                                     {% endfor %}
 
-                                    <hr />
-                                {% endfor %}
-
-                            </details>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            {% endfor %}
+                                </details>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h1 class= "pico-color-green-500 center-text">No discrepancy detected :)</h1>
+            {% endif %}
 
         </main>
     </body>
