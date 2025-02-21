@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Set
 
-from .parser import SpecMethod
+from .models import APIMethod, APIMethods
 
 
 class MethodInfo:
-    def __init__(self, method_data: SpecMethod, diff_details: Optional[Dict[str, List[str]]] = None) -> None:
+    def __init__(self, method_data: APIMethod, diff_details: Optional[Dict[str, List[str]]] = None) -> None:
         self.http_method: str = method_data.method
         self.http_path: str = method_data.route
         self.diff_details: Dict[str, List[str]] = diff_details or {}
@@ -18,23 +18,23 @@ class Diff:
         self.modified: List[MethodInfo] = []
         self.missed: List[MethodInfo] = []
 
-    def add_added(self, method: SpecMethod) -> None:
+    def add_added(self, method: APIMethod) -> None:
         self.added.append(MethodInfo(method))
 
-    def add_similar(self, method: SpecMethod) -> None:
+    def add_similar(self, method: APIMethod) -> None:
         self.similar.append(MethodInfo(method))
 
-    def add_modified(self, method: SpecMethod, diff_details: Dict[str, List[str]]) -> None:
+    def add_modified(self, method: APIMethod, diff_details: Dict[str, List[str]]) -> None:
         self.modified.append(MethodInfo(method, diff_details))
 
-    def add_missed(self, method: SpecMethod) -> None:
+    def add_missed(self, method: APIMethod) -> None:
         self.missed.append(MethodInfo(method))
 
 
 class Differ:
-    def __init__(self, golden_spec: Dict[str, SpecMethod], testing_spec: Dict[str, SpecMethod]) -> None:
-        self.golden_spec = golden_spec
-        self.testing_spec = testing_spec
+    def __init__(self, golden: APIMethods, testing: APIMethods) -> None:
+        self.golden_ams = golden
+        self.testing_ams = testing
         self.diff = Diff()
 
     @abstractmethod
@@ -42,48 +42,55 @@ class Differ:
         pass
 
     def get_added_method_ids(self) -> Set[str]:
-        return set(self.golden_spec.keys()) - set(self.testing_spec.keys())
+        return self.golden_ams.get_ids() - self.testing_ams.get_ids()
 
     def get_missed_method_ids(self) -> Set[str]:
-        return set(self.testing_spec.keys()) - set(self.golden_spec.keys())
+        return self.testing_ams.get_ids() - self.golden_ams.get_ids()
 
     def get_common_method_ids(self) -> List[str]:
-        return sorted(set(self.golden_spec.keys()) & set(self.testing_spec.keys()))
+        return sorted(self.golden_ams.get_ids() & self.testing_ams.get_ids())
 
     def get_added_response_codes(self, method_id: str) -> Set[str]:
-        return set(self.golden_spec[method_id].response_codes) - set(self.testing_spec[method_id].response_codes)
+        return self.golden_ams[method_id].get_codes() - self.testing_ams[method_id].get_codes()
 
     def get_missed_response_codes(self, method_id: str) -> Set[str]:
-        return set(self.testing_spec[method_id].response_codes) - set(self.golden_spec[method_id].response_codes)
+        return self.testing_ams[method_id].get_codes() - self.golden_ams[method_id].get_codes()
+
+    def get_common_response_codes(self, method_id: str) -> List[str]:
+        return sorted(self.golden_ams[method_id].get_codes() & self.testing_ams[method_id].get_codes())
 
     def get_added_queries(self, method_id: str) -> Set[str]:
-        return set(self.golden_spec[method_id].query_params) - set(self.testing_spec[method_id].query_params)
+        return self.golden_ams[method_id].query_params - self.testing_ams.methods[method_id].query_params
 
     def get_missed_queries(self, method_id: str) -> Set[str]:
-        return set(self.testing_spec[method_id].query_params) - set(self.golden_spec[method_id].query_params)
+        return self.testing_ams[method_id].query_params - self.golden_ams[method_id].query_params
 
-    def get_added_request_body_fields(self, method_id: str) -> List[str]:
+    def get_added_request_body_fields(self, method_id: str, content_type: str = "application/json") -> List[str]:
         return self.compare_schemas(
-            self.golden_spec[method_id].body_request_schema.get("properties", {}),
-            self.testing_spec[method_id].body_request_schema.get("properties", {})
+            self.golden_ams[method_id].request_body_schema[content_type].get("properties", {}),
+            self.testing_ams[method_id].request_body_schema[content_type].get("properties", {})
         )
 
-    def get_missed_request_body_fields(self, method_id: str) -> List[str]:
+    def get_missed_request_body_fields(self, method_id: str, content_type: str = "application/json") -> List[str]:
         return self.compare_schemas(
-            self.testing_spec[method_id].body_request_schema.get("properties", {}),
-            self.golden_spec[method_id].body_request_schema.get("properties", {})
+            self.testing_ams.methods[method_id].request_body_schema[content_type].get("properties", {}),
+            self.golden_ams.methods[method_id].request_body_schema[content_type].get("properties", {})
         )
 
-    def get_added_response_body_fields(self, method_id: str) -> List[str]:
+    def get_added_response_body_fields(
+            self, method_id: str, code: str, content_type: str = "application/json"
+    ) -> List[str]:
         return self.compare_schemas(
-            self.golden_spec[method_id].response_schema.get("properties", {}),
-            self.testing_spec[method_id].response_schema.get("properties", {})
+            self.golden_ams[method_id].response_body_schema[code][content_type].get("properties", {}),
+            self.testing_ams[method_id].response_body_schema[code][content_type].get("properties", {})
         )
 
-    def get_missed_response_body_fields(self, method_id: str) -> List[str]:
+    def get_missed_response_body_fields(
+            self, method_id: str, code: str, content_type: str = "application/json"
+    ) -> List[str]:
         return self.compare_schemas(
-            self.testing_spec[method_id].response_schema.get("properties", {}),
-            self.golden_spec[method_id].response_schema.get("properties", {})
+            self.testing_ams[method_id].response_body_schema[code][content_type].get("properties", {}),
+            self.golden_ams[method_id].response_body_schema[code][content_type].get("properties", {})
         )
 
     def compare_schemas(
@@ -138,7 +145,7 @@ class DiffDataCoverage:
 class DifferCoverage(Differ):
     def get_diff(self) -> DiffDataCoverage:
         for method_id in self.get_added_method_ids():
-            self.diff.add_added(self.golden_spec[method_id])
+            self.diff.add_added(self.golden_ams[method_id])
 
         for method_id in self.get_common_method_ids():
             details = {}
@@ -147,23 +154,24 @@ class DifferCoverage(Differ):
             if added_queries:
                 details["Uncovered query parameters"] = list(added_queries)
 
-            added_response_codes = self.get_added_response_codes(method_id)
-            if added_response_codes:
-                details["Uncovered response codes"] = list(added_response_codes)
-
             added_request_body_fields = self.get_added_request_body_fields(method_id)
             if added_request_body_fields:
                 details["Uncovered request body fields"] = added_request_body_fields
 
-            added_response_body_fields = self.get_added_response_body_fields(method_id)
-            if added_response_body_fields:
-                details["Uncovered response body fields"] = added_response_body_fields
+            added_response_codes = self.get_added_response_codes(method_id)
+            if added_response_codes:
+                details["Uncovered response codes"] = list(added_response_codes)
+
+            for code in self.get_common_response_codes(method_id):
+                added_response_body_fields = self.get_added_response_body_fields(method_id, code)
+                if added_response_body_fields:
+                    details[f"Uncovered {code} response body fields"] = added_response_body_fields
 
             if details:
-                self.diff.add_modified(self.golden_spec[method_id], details)
+                self.diff.add_modified(self.golden_ams[method_id], details)
                 continue
 
-            self.diff.add_similar(self.golden_spec[method_id])
+            self.diff.add_similar(self.golden_ams[method_id])
 
         return DiffDataCoverage(self.diff)
 
@@ -177,7 +185,7 @@ class DiffDataDiscrepancy:
 class DifferDiscrepancy(Differ):
     def get_diff(self) -> DiffDataDiscrepancy:
         for method_id in self.get_missed_method_ids():
-            self.diff.add_missed(self.testing_spec[method_id])
+            self.diff.add_missed(self.testing_ams[method_id])
 
         for method_id in self.get_common_method_ids():
             details = {}
@@ -186,20 +194,21 @@ class DifferDiscrepancy(Differ):
             if missed_queries:
                 details["Undocumented query parameters"] = list(missed_queries)
 
-            missed_response_codes = self.get_missed_response_codes(method_id)
-            if missed_response_codes:
-                details["Undocumented response codes"] = list(missed_response_codes)
-
             missed_request_body_fields = self.get_missed_request_body_fields(method_id)
             if missed_request_body_fields:
                 details["Undocumented request body fields"] = missed_request_body_fields
 
-            missed_response_body_fields = self.get_missed_response_body_fields(method_id)
-            if missed_response_body_fields:
-                details["Undocumented response body fields"] = missed_response_body_fields
+            missed_response_codes = self.get_missed_response_codes(method_id)
+            if missed_response_codes:
+                details["Undocumented response codes"] = list(missed_response_codes)
+
+            for code in self.get_common_response_codes(method_id):
+                missed_response_body_fields = self.get_missed_response_body_fields(method_id, code)
+                if missed_response_body_fields:
+                    details[f"Undocumented {code} response body fields"] = missed_response_body_fields
 
             if details:
-                self.diff.add_modified(self.golden_spec[method_id], details)
+                self.diff.add_modified(self.golden_ams[method_id], details)
                 continue
 
         return DiffDataDiscrepancy(self.diff)
@@ -215,10 +224,10 @@ class DiffDataChanges:
 class DifferChanges(Differ):
     def get_diff(self) -> DiffDataChanges:
         for method_id in self.get_added_method_ids():
-            self.diff.add_added(self.golden_spec[method_id])
+            self.diff.add_added(self.golden_ams[method_id])
 
         for method_id in self.get_missed_method_ids():
-            self.diff.add_missed(self.testing_spec[method_id])
+            self.diff.add_missed(self.testing_ams[method_id])
 
         for method_id in self.get_common_method_ids():
             details = {}
@@ -231,14 +240,6 @@ class DifferChanges(Differ):
             if missed_queries:
                 details["Deleted query parameters"] = list(missed_queries)
 
-            added_response_codes = self.get_added_response_codes(method_id)
-            if added_response_codes:
-                details["New response codes"] = list(added_response_codes)
-
-            missed_response_codes = self.get_missed_response_codes(method_id)
-            if missed_response_codes:
-                details["Deleted response codes"] = list(missed_response_codes)
-
             added_request_body_fields = self.get_added_request_body_fields(method_id)
             if added_request_body_fields:
                 details["New request body fields"] = added_request_body_fields
@@ -247,16 +248,25 @@ class DifferChanges(Differ):
             if missed_request_body_fields:
                 details["Deleted request body fields"] = missed_request_body_fields
 
-            added_response_body_fields = self.get_added_response_body_fields(method_id)
-            if added_response_body_fields:
-                details["New response body fields"] = added_response_body_fields
+            added_response_codes = self.get_added_response_codes(method_id)
+            if added_response_codes:
+                details["New response codes"] = list(added_response_codes)
 
-            missed_response_body_fields = self.get_missed_response_body_fields(method_id)
-            if missed_response_body_fields:
-                details["Deleted response body fields"] = missed_response_body_fields
+            missed_response_codes = self.get_missed_response_codes(method_id)
+            if missed_response_codes:
+                details["Deleted response codes"] = list(missed_response_codes)
+
+            for code in self.get_common_response_codes(method_id):
+                added_response_body_fields = self.get_added_response_body_fields(method_id, code)
+                if added_response_body_fields:
+                    details[f"New {code} response body fields"] = added_response_body_fields
+
+                missed_response_body_fields = self.get_missed_response_body_fields(method_id, code)
+                if missed_response_body_fields:
+                    details[f"Deleted {code} response body fields"] = missed_response_body_fields
 
             if details:
-                self.diff.add_modified(self.golden_spec[method_id], details)
+                self.diff.add_modified(self.golden_ams[method_id], details)
                 continue
 
         return DiffDataChanges(self.diff)

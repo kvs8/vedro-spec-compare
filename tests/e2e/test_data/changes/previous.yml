@@ -51,6 +51,17 @@ paths:
                     type: number
                   name:
                     type: string
+        400:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: number
+                  message:
+                    type: string
     delete:
       parameters:
         - in: query
