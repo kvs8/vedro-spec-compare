@@ -103,18 +103,76 @@
                         {% for method in methods %}
                             <details>
                                 <summary role="button" class="outline secondary">
-                                    {{ method.http_method|upper }} {{ method.http_path }}
+                                    <b class="pico-color-grey-50">{{ method.method|upper }} {{ method.route }}</b>
                                 </summary>
 
-                                {% for type, diffs in method.diff_details.items() %}
-                                    <h5> {{ type }}:</h5>
+                                {% if method.added_query_params %}
+                                    <article>
+                                        <h3> Query-parameters:</h3>
 
-                                    {% for diff in diffs %}
-                                        <kbd>{{ diff }}</kbd>
+                                        <hr>
+                                        <h6> Uncovered parameters:</h6>
+                                        {% for query in method.added_query_params %}
+                                            <kbd>{{ query }}</kbd>
+                                        {% endfor %}
+
+                                    </article>
+                                {% endif %}
+
+
+                                {% if method.request_body_diff %}
+                                    <article>
+                                    <h3> Request body:</h3>
+
+                                    {% for content_diff in method.request_body_diff.values() %}
+                                        <hr>
+                                        <h5> Content <u>{{ content_diff.content }}</u>: </h5>
+
+                                        {% if content_diff.added_fields %}
+                                            <hr>
+                                            <h6> Uncovered fields: </h6>
+                                            {% for fields in content_diff.added_fields %}
+                                                <kbd>{{ fields }}</kbd>
+                                            {% endfor %}
+                                        {% endif %}
                                     {% endfor %}
 
-                                    <hr />
-                                {% endfor %}
+                                    </article>
+                                {% endif %}
+
+
+                                {% if method.response_body_diff or method.added_status_codes %}
+                                    <article>
+                                    <h3> Response body:</h3>
+
+                                    {% if method.added_status_codes %}
+                                        <hr>
+                                        <h6> Uncovered status codes:</h6>
+                                        {% for code in method.added_status_codes %}
+                                            <kbd>{{ code }}</kbd>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    {% for body_diff in method.response_body_diff.values() %}
+                                        <hr>
+                                        <h4> Status <u>{{ body_diff.code }}</u>: </h4>
+
+                                        {% for content_diff in body_diff.content_diff.values() %}
+                                            <hr>
+                                            <h5> Content <u>{{ content_diff.content }}</u>: </h5>
+
+                                            {% if content_diff.added_fields %}
+                                                <hr>
+                                                <h6> Uncovered fields: </h6>
+                                                {% for fields in content_diff.added_fields %}
+                                                    <kbd>{{ fields }}</kbd>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+
+                                    </article>
+                                {% endif %}
 
                             </details>
                         {% endfor %}
